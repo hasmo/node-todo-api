@@ -138,3 +138,42 @@ describe('GET /todos/:id', () => {
     });
   });
 });
+
+describe('PATCH /todos/:id', () => {
+  it('should update the todo', (done) => {
+    let todoId = todos[0]._id.toHexString();
+    let text = 'Something new for the text';
+    let completed = true;
+
+    request(app)
+      .patch(`/todos/${todoId}`)
+      .send({text, completed})
+      .expect(200)
+      .expect((res) => {
+
+        expect(res.body.todo.text).toEqual(text);
+        expect(res.body.todo.completed).toEqual(true);
+        expect(typeof res.body.todo.completedAt).toBe('number');
+      })
+      .end(done);
+  });
+
+  it('should clear completed at when todo is not completed', (done) => {
+    let todoId = todos[1]._id.toHexString();
+    let text = 'Something new for the text!!!!';
+    let completed = false;
+
+    request(app)
+      .patch(`/todos/${todoId}`)
+      .send({text, completed})
+      .expect(200)
+      .expect((res) => {
+
+        expect(res.body.todo.text).toEqual(text);
+        expect(res.body.todo.completed).toEqual(false);
+        expect(res.body.todo.completedAt).toEqual(null);
+      })
+      .end(done);
+  });
+});
+
